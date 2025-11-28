@@ -9,7 +9,7 @@ from user import User
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-app.add_url_rule('/login',
+app.add_url_rule('/',
                  view_fun=Login.as_view('login'),
                  methods=["GET", "POST"])
 
@@ -19,11 +19,11 @@ app.add_url_rule('/dashboard',
 
 app.add_url_rule('/event',
                  view_fun=Event.as_view('event'),
-                 methods=["GET", "POST"])
+                 methods=["GET"])
 
 app.add_url_rule('/user',
                  view_fun=User.as_view('user'),
-                 methods=["GET", "POST"])
+                 methods=["GET"])
 
 if __name__ == '__main__':
     socketio.run(app, host='127.0.0.1', port=5000, debug=True) # debug=True enables reloader and debugger for development
