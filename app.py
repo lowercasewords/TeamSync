@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 from flask.views import MethodView
 from login import Login
 from dashboard import Dashboard
@@ -10,19 +10,19 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 app.add_url_rule('/',
-                 view_fun=Login.as_view('login'),
+                 view_func=Login.as_view('login'),
                  methods=["GET", "POST"])
 
 app.add_url_rule('/dashboard',
-                 view_fun=Dashboard.as_view('dashboard'),
+                 view_func=Dashboard.as_view('dashboard'),
                  methods=["GET"])
 
 app.add_url_rule('/event',
-                 view_fun=Event.as_view('event'),
+                 view_func=Event.as_view('event'),
                  methods=["GET"])
 
 app.add_url_rule('/user',
-                 view_fun=User.as_view('user'),
+                 view_func=User.as_view('user'),
                  methods=["GET"])
 
 if __name__ == '__main__':
