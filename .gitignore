@@ -205,3 +205,25 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Python virtual environment
+venv/
+ENV/
+env/
+
+# SQLite database file
+*.db
+*.sqlite3
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code settings
+.vscode/
+
+# Mac / Linux junk files
+.DS_Store
+*.swp
