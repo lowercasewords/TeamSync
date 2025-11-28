@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block title %}Create Event{% endblock %} {% block
+content %}
+<h2>Create Event</h2>
+
+<form method="POST" action="{{ url_for('create_event') }}">
+  <label>Event Name:</label><br />
+  <input type="text" name="name" required /><br /><br />
+
+  <label>Description:</label><br />
+  <textarea name="description" required></textarea><br /><br />
+
+  <label>Time:</label><br />
+  <input type="text" name="time" required /><br /><br />
+
+  <button type="submit">Create Event</button>
+</form>
+
+<!-- Go back to the dashboard -->
+<div class="back-btn">
+  <a href="{{ url_for('index') }}" >Back to Dashboard</a>
+</div>
+{% endblock %}

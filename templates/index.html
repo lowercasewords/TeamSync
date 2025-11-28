@@ -1,0 +1,72 @@
+{% extends "layout.html" %} {% block title %}Dashboard{% endblock %} {% block
+content %}
+<div class="dashboard-container">
+  <header class="top-bar">
+    <h2>Dashboard</h2>
+  </header>
+
+  <div class="dashboard-body">
+    <!-- Ride side of dashboard -->
+    <section class="events-panel">
+      <h3>Events</h3>
+
+      {% if events %}
+      <ul class="event-list">
+        {% for event in events %}
+        <li class="event-item">
+          <h4>{{ event.name }}</h4>
+          <p>{{ event.description }}</p>
+          <small>{{ event.time }}</small>
+
+          <form
+            action="{{ url_for('delete_event', event_id=event.id) }}"
+            method="POST"
+            class="delete-form"
+          >
+            <button type="submit" class="delete-btn">Remove</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty-msg">No events yet.</p>
+      {% endif %}
+    </section>
+
+    <!-- Ride side of dashboard -->
+    <aside class="sidebar">
+      <nav class="sidebar-links">
+        <a href="{{ url_for('new_user') }}">Add User</a>
+        <a href="{{ url_for('create_event') }}">Create Event</a>
+
+        <form action="{{ url_for('logout') }}" method="POST">
+          <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </nav>
+
+      <h3>Users</h3>
+
+      {% if users %}
+      <ul class="user-list">
+        {% for user in users %}
+        <li class="user-item">
+          {{ user.name }} – {{ user.position }}
+
+          <form
+            action="{{ url_for('delete_user', user_id=user.id) }}"
+            method="POST"
+            class="delete-form"
+          >
+            <button type="submit" class="delete-btn">Remove</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="empty-msg">No users added.</p>
+      {% endif %}
+    </aside>
+  </div>
+</div>
+
+{% endblock %}
