@@ -1,0 +1,125 @@
+/* Base layout — flexbox like Google Calendar */
+.dashboard-container {
+  width: 100%;
+  height: 100%;
+}
+
+.top-bar {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ddd;
+}
+
+.dashboard-body {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+/* Left side — events */
+.events-panel {
+  flex: 3; /* 70% width */
+  padding: 20px;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+}
+
+.event-item {
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+}
+
+.delete-btn {
+  margin-top: 8px;
+  background: #e74c3c;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+.empty-msg {
+  color: gray;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* Right sidebar */
+.sidebar {
+  flex: 1; /* 30% width */
+  padding: 20px;
+  background: #fafafa;
+  overflow-y: auto;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-links a {
+  background: #4a90e2;
+  color: white;
+  padding: 10px 14px;
+  text-decoration: none;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.sidebar-links a:hover {
+  background: #357abd;
+}
+
+.logout-btn {
+  margin-top: 10px;
+  width: 100%;
+  background: #333;
+  color: white;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 5px;
+}
+
+.user-list {
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+.user-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.back-btn {
+  margin-top: 20px;
+}
+
+.back-btn a {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #888;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.back-btn a:hover {
+  background: #555;
+}
