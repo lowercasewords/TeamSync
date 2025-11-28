@@ -7,6 +7,7 @@ from event import Event
 from user import User
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "TeamSync Pro S++ 2.0 Demo"
 socketio = SocketIO(app)
 
 app.add_url_rule('/',

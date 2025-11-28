@@ -9,7 +9,8 @@ class Login(MethodView):
     def post(self):
         users_model = get_user_model()
         user = users_model.get_user_by_email(request.form['email'])
-        if type(user) is None:
+        if user is None:
             return self.get()
-        session["user"] = user
-        return redirect(url_for('dashboard'))
+        else:
+            session["user"] = user
+            return redirect(url_for('dashboard'))
