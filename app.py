@@ -6,6 +6,8 @@ from logout import Logout
 from dashboard import Dashboard
 from event import Event
 from user import User
+from entrymodel import get_model as get_user_model
+from eventsmodel import get_model as get_event_model
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "TeamSync Pro S++ 2.0 Demo"
@@ -31,13 +33,63 @@ app.add_url_rule('/new_user',
                  view_func=User.as_view('new_user'),
                  methods=["GET"])
 
-@socketio.on("connect")
+@socketio.on('connect')
 def connect():
     user = session.get("user")
-    if type(user) is None:
+    if not user:
         return
     else:
-        emit("connect-after", {"user": user, "msg": "user has entered"})
+        print('user has connected')
 
+@socketio.on('disconnect')
+def disconnect():
+    user = session.get("user")
+    if not user:
+        return
+    else:
+        print('user has disconnected')
+
+@socketio.on('new_user')
+def new_user(form_info):
+    user = session.get("user")
+    if not user:
+        return
+    else:
+        users_model = get_user_model()
+        user_email = users_model.create_user(form_info['email'], form_info['name'], form_info['role'])
+        new_user = users_model.get_user_by_email(user_email)
+        emit('updated_users', {'new_user': new_user}, broadcast=True)
+        
+@socketio.on('delete_user')
+def delete_user(form_info):
+    user = session.get("user")
+    if not user:
+        return
+    else:
+        users_model = get_user_model()
+        user_deleted = users_model.delete_user_by_id(form_info['user_id'])
+        emit('updated_users', {'user_deleted': user_deleted}, broadcast=True)
+
+@socketio.on('create_event')
+def create_event(form_info):
+    user = session.get("user")
+    if not user:
+        return
+    else:
+        events_model = get_event_model()
+        event_id = events_model.create_event(form_info['title'], form_info['description'], form_info['start_time'], form_info['end_time'], form_info['created_by'])
+        created_event = events_model.get_event_by_id(event_id)
+        emit('updated_events', {'new_event': new_event}, broadcast=True)
+
+@socketio.on('delete_event')
+def delete_event(form_info):
+    user = session.get("user")
+    if not user:
+        return
+    else:
+        events_model = get_event_model()
+        event_deleted = events_model.delete_event(form_info['event_id'])
+        emit('updated_events', {'event_deleted': event_deleted}, broadcast=True)
+        
 if __name__ == '__main__':
     socketio.run(app, host='127.0.0.1', port=5000, debug=True) # debug=True enables reloader and debugger for development
