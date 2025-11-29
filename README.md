@@ -36,7 +36,7 @@ Bound to User class via HTTP GET
 
 Moreover, the following socket events are created to handle changes in real-time:
 | Event Name | Arguments | Response Event Name | Returns |
-|----|----|----|
+|----|----|----|----|
 | `connect`| _(none)_ | _(none)_ | _(none)_ |
 | `disconnect`| _(none)_ | _(none)_ | _(none)_ |
 | `new_user` | `formInfo: dict` with keys `email`, `name`, `role` | `updated_users` | `dict` with key `new_user` |
