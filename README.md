@@ -2,7 +2,7 @@
 The calendar-management app prototype
 
 ## Database Back-End( Users & Events)
-Owner: Taka Irizarry billionaire philanthropist/batman/Terry Davis apologist
+Owner: Taka Irizarry
 Packages: entrymode, eventsmodel
 
 
