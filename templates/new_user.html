@@ -2,32 +2,21 @@
 content %}
 <h2>Add User</h2>
 
-<form method="POST" action="{{ url_for('new_user') }}">
+<form action="{{ url_for('dashboard') }}">
   <label>Name:</label><br />
   <input type="text" name="name" required /><br /><br />
 
-  <label>Position:</label><br />
-  <input type="text" name="position" required /><br /><br />
+  <label>Role:</label><br />
+  <input type="text" name="role" required /><br /><br />
 
   <label>Email (used to log in):</label><br />
   <input type="email" name="email" required /><br /><br />
-
-  <label>
-    <input type="checkbox" name="can_add_events" />
-    Able to add events </label
-  ><br /><br />
-
-  <label>
-    <input type="checkbox" name="is_admin" />
-    Administrator </label
-  ><br /><br />
 
   <button type="submit">Add User</button>
 </form>
 
 <!-- Go back to the dashboard -->
 <div class="back-btn">
-  <a href="{{ url_for('index') }}">Back to Dashboard</a>
+  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
 </div>
-
 {% endblock %}

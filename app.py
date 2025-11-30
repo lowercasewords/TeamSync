@@ -68,7 +68,8 @@ def delete_user(form_info):
     else:
         users_model = get_user_model()
         user_deleted = users_model.delete_user_by_id(form_info['user_id'])
-        emit('updated_users', {'user_deleted': user_deleted}, broadcast=True)
+        if user_deleted is True:
+            emit('updated_users', {'user_deleted': form_info['user_id']}, broadcast=True)
 
 @socketio.on('create_event')
 def create_event(form_info):
@@ -79,7 +80,7 @@ def create_event(form_info):
         events_model = get_event_model()
         event_id = events_model.create_event(form_info['title'], form_info['description'], form_info['start_time'], form_info['end_time'], form_info['created_by'])
         created_event = events_model.get_event_by_id(event_id)
-        emit('updated_events', {'new_event': new_event}, broadcast=True)
+        emit('updated_events', {'new_event': created_event}, broadcast=True)
 
 @socketio.on('delete_event')
 def delete_event(form_info):
@@ -89,7 +90,8 @@ def delete_event(form_info):
     else:
         events_model = get_event_model()
         event_deleted = events_model.delete_event(form_info['event_id'])
-        emit('updated_events', {'event_deleted': event_deleted}, broadcast=True)
+        if event_deleted is True:
+            emit('updated_events', {'event_deleted': form_info['event_id']}, broadcast=True)
         
 if __name__ == '__main__':
     socketio.run(app, host='127.0.0.1', port=5000, debug=True) # debug=True enables reloader and debugger for development

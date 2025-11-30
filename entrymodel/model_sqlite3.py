@@ -29,6 +29,10 @@ class UserModel:
         """
         cur = self.conn.cursor()
         cur.execute(sql)
+        cur.execute(
+            "INSERT OR IGNORE INTO users (email, name, role) VALUES (?, ?, ?);",
+            ("vrami2@pdx.edu", "Victor", "admin"),
+            )
         self.conn.commit()
 
 
@@ -62,7 +66,7 @@ class UserModel:
             (email, name, role),
         )
         self.conn.commit()
-        return cur.lastrowid
+        return email
 
     #DELETE OPERATIONS
 

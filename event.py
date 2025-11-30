@@ -7,4 +7,4 @@ class Event(MethodView):
         if user is None:
             return redirect(url_for('login'))
         else:
-            return render_template('create_event.html')
+            return render_template('create_event.html', user=user)

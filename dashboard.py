@@ -13,4 +13,4 @@ class Dashboard(MethodView):
             events_model = get_event_model();
             users = users_model.get_all_users();
             events = events_model.get_all_events();
-            return render_template('index.html', users=users, events=events)
+            return render_template('index.html', users=users, events=events, user=user)

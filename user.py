@@ -7,4 +7,4 @@ class User(MethodView):
         if user is None:
             return redirect(url_for('login'))
         else:
-            return render_template('new_user.html')
+            return render_template('new_user.html', user=user)
