@@ -11,13 +11,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script type="text/javascript">
 	$(document).ready(function() {
-	    const socketio = io();
+		let user_id = sessionStorage.getItem("user"); // track via per-tab from localStorage
+		if (!user_id) {
+			user_id = "{{ user.email }}"
+			sessionStorage.setItem("user", user_id);
+		}
+		const socketio = io({ query: { user: user_id } });
 	    $('form').submit(function(event) {
-		    if (($('input[name="email"]').val() !== undefined) && ($('input[name="name"]').val() !== undefined) && ($('input[name="role"]').val() !== undefined)) {
+		    if (($('input[name="email"]').val() !== undefined) && ($('input[name="name"]').val() !== undefined) && ($('select[name="role"]').val() !== undefined)) {
 			    socketio.emit("new_user", {
 				    email: $('input[name="email"]').val(),
 				    name: $('input[name="name"]').val(),
-				    role: $('input[name="role"]').val()
+				    role: $('select[name="role"]').val()
 			    });
 		    }
 		    else if (($('input[name="title"]').val() !== undefined) && ($('textarea[name="description"]').val() !== undefined) && ($('input[name="start_time"]').val() !== undefined) && ($('input[name="end_time"]').val() !== undefined)) {
@@ -64,29 +69,62 @@
 		    }
 	    });
 	    socketio.on("updated_events", function(info) {
-		    console.log(info);
 		    if (info.new_event !== undefined) {
-			    $(".event-list").append($("<li>", {
-				    "class": "event-item"
-			    }).append($("<h4>", {
-				    "text": `${info.new_event.title}`
-			    })).append($("<p>", {
-				    "text": `${info.new_event.description}`
-			    })).append($("<small>", {
-				    "text": `${info.new_event.start_time} to ${info.new_event.end_time}`
-			    })).append($("<form>", {
-				    "id": `${info.new_event.id}`,
-				    "class": "delete-form"
-			    }).append($("<button>", {
-				    "class": "delete-btn",
-				    "type": "submit",
-				    "text": "Remove"
-			    }))
-			    )
-			    );
+			    if ($(".events-panel").has(".event-list").length > 0) {
+				    $(".event-list").append($("<li>", {
+					    "class": "event-item"
+				    }).append($("<h4>", {
+					    "text": `${info.new_event.title}`
+				    })).append($("<p>", {
+					    "text": `${info.new_event.description}`
+				    })).append($("<small>", {
+					    "text": `${info.new_event.start_time} to ${info.new_event.end_time}`
+				    })).append($("<form>", {
+					    "id": `${info.new_event.id}`,
+					    "class": "delete-form"
+				    }).append($("<button>", {
+					    "class": "delete-btn",
+					    "type": "submit",
+					    "text": "Remove"
+				    }))
+				    )
+				    );
+			    }
+			    else {
+				    $(".empty-msg").remove();
+				    $(".events-panel").append($("<ul>", {
+					    "class": "event-list"
+				    }).append($("<li>", {
+					    "class": "event-item"
+				    }).append($("<h4>", {
+					    "text": `${info.new_event.title}`
+				    })).append($("<p>", {
+					    "text": `${info.new_event.description}`
+				    })).append($("<small>", {
+					    "text": `${info.new_event.start_time} to ${info.new_event.end_time}`
+				    })).append($("<form>", {
+					    "id": `${info.new_event.id}`,
+					    "class": "delete-form"
+				    }).append($("<button>", {
+					    "class": "delete-btn",
+					    "type": "submit",
+					    "text": "Remove"
+				    }))
+				    )
+				    )
+				    );
+			    }
 		    }
 		    else if (info.event_deleted !== undefined) {
 			    $(`form#${info.event_deleted}`).parent().remove();
+			    if ($(".event-list").has(".event-item").length === 0) {
+				    $(".event-list").remove();
+				    $(".events-panel").append($("<p>", {
+					    "class": "empty-msg",
+					    "text": "No events yet."
+				    })
+				    );
+			    }
 		    }
 	    });
 	});

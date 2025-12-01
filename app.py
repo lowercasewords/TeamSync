@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, request
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
 from login import Login
@@ -33,25 +33,31 @@ app.add_url_rule('/new_user',
                  view_func=User.as_view('new_user'),
                  methods=["GET"])
 
+users = {}
+
 @socketio.on('connect')
-def connect():
-    user = session.get("user")
-    if not user:
-        return
+def handle_connect():
+    user = request.args.get("user")
+    sid = request.sid
+    if user == session.get("user")['email']:
+        users[sid] = user
+        print(session.get("user"))
+        print(f"1: user {user} has connected")
     else:
-        print('user has connected')
+        users_model = get_user_model()
+        session['user'] = users_model.get_user_by_email(user)
+        print(session.get("user"))
+        users[sid] = user
+        print(f"2: user {user} has connected")
 
 @socketio.on('disconnect')
-def disconnect():
-    user = session.get("user")
-    if not user:
-        return
-    else:
-        print('user has disconnected')
+def handle_disconnect(data=None):
+    user = users.pop(request.sid, None)
+    print(f"user {user} has disconnected")
 
 @socketio.on('new_user')
 def new_user(form_info):
-    user = session.get("user")
+    user = users.get(request.sid)
     if not user:
         return
     else:
@@ -62,7 +68,7 @@ def new_user(form_info):
         
 @socketio.on('delete_user')
 def delete_user(form_info):
-    user = session.get("user")
+    user = users.get(request.sid)
     if not user:
         return
     else:
@@ -73,7 +79,7 @@ def delete_user(form_info):
 
 @socketio.on('create_event')
 def create_event(form_info):
-    user = session.get("user")
+    user = users.get(request.sid)
     if not user:
         return
     else:
@@ -84,14 +90,15 @@ def create_event(form_info):
 
 @socketio.on('delete_event')
 def delete_event(form_info):
-    user = session.get("user")
+    user = users.get(request.sid)
     if not user:
+        emit('delete_failed', {'error': 'no_event_id'}, to=request.sid)
         return
     else:
         events_model = get_event_model()
         event_deleted = events_model.delete_event(form_info['event_id'])
         if event_deleted is True:
             emit('updated_events', {'event_deleted': form_info['event_id']}, broadcast=True)
-        
+
 if __name__ == '__main__':
     socketio.run(app, host='127.0.0.1', port=5000, debug=True) # debug=True enables reloader and debugger for development
