@@ -1,35 +1,36 @@
 {% extends "layout.html" %} {% block title %}Create Event{% endblock %} {% block
 content %}
 <h2>Create Event</h2>
+<div class="center-container">
+  <form action="{{ url_for('dashboard') }}">
+    <label>Event Name:</label><br />
+    <input type="text" name="title" required /><br /><br />
 
-<form action="{{ url_for('dashboard') }}">
-  <label>Event Name:</label><br />
-  <input type="text" name="title" required /><br /><br />
+    <label>Description:</label><br />
+    <textarea name="description" required></textarea><br /><br />
 
-  <label>Description:</label><br />
-  <textarea name="description" required></textarea><br /><br />
+    <label>Start Time:</label><br />
+    <input
+      type="datetime-local"
+      id="start_date"
+      name="start_time"
+      required
+    /><br /><br />
 
-  <label>Start Time:</label><br />
-  <input
-    type="datetime-local"
-    id="start_date"
-    name="start_time"
-    required
-  /><br /><br />
+    <label>End Time:</label><br />
+    <input
+      type="datetime-local"
+      id="end_date"
+      name="end_time"
+      required
+    /><br /><br />
 
-  <label>End Time:</label><br />
-  <input
-    type="datetime-local"
-    id="end_date"
-    name="end_time"
-    required
-  /><br /><br />
+    <button class="submit-button" type="submit">Create Event</button>
+  </form>
 
-  <button type="submit">Create Event</button>
-</form>
-
-<!-- Go back to the dashboard -->
-<div class="back-btn">
-  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+  <!-- Go back to the dashboard -->
+  <div class="back-btn">
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+  </div>
 </div>
 {% endblock %}
