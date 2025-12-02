@@ -21,6 +21,6 @@ content %}
 
 <!-- Go back to the dashboard -->
 <div class="back-btn">
-  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+	<a href="{{ url_for('dashboard', user=user.email) }}">Back to Dashboard</a>
 </div>
 {% endblock %}

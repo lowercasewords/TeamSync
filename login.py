@@ -13,4 +13,4 @@ class Login(MethodView):
             return self.get()
         else:
             session["user"] = user
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard', user=user['email']))
