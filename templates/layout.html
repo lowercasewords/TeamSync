@@ -5,91 +5,130 @@
     <title>{% block title %}Team Sync{% endblock %}</title>
 
     <link rel="stylesheet" href="/static/style.css" />
-    
+
     {% if user is defined %}
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
     <script type="text/javascript">
-	$(document).ready(function() {
-	    const socketio = io();
-	    $('form').submit(function(event) {
-		    if (($('input[name="email"]').val() !== undefined) && ($('input[name="name"]').val() !== undefined) && ($('input[name="role"]').val() !== undefined)) {
-			    socketio.emit("new_user", {
-				    email: $('input[name="email"]').val(),
-				    name: $('input[name="name"]').val(),
-				    role: $('input[name="role"]').val()
-			    });
-		    }
-		    else if (($('input[name="title"]').val() !== undefined) && ($('textarea[name="description"]').val() !== undefined) && ($('input[name="start_time"]').val() !== undefined) && ($('input[name="end_time"]').val() !== undefined)) {
-			    socketio.emit("create_event", {
-				    title: $('input[name="title"]').val(),
-				    description: $('textarea[name="description"]').val(),
-				    start_time: $('input[name="start_time"]').val(),
-				    end_time: $('input[name="end_time"]').val(),
-				    created_by: "{{ user.name }}"
-			    });
-		    }
-		    else if ($(this).attr('id') !== undefined) {
-			    event.preventDefault();
-			    if ($(this).parent().attr('class') === "user-item") {
-				    socketio.emit("delete_user", {
-					    user_id: $(this).attr('id')
-				    });
-			    }
-			    else if ($(this).parent().attr('class') === "event-item") {
-				    socketio.emit("delete_event", {
-					    event_id: $(this).attr('id')
-				    });
-			    }
-		    }
-	    });
-	    socketio.on("updated_users", function(info) {
-		    if (info.new_user !== undefined) {
-			    $(".user-list").append($("<li>", {
-				    "class": "user-item",
-				    "text": `${info.new_user.name} - ${info.new_user.role}`,
-			    }).append($("<form>", {
-				    "id": `${info.new_user.id}`,
-				    "class": "delete-form"
-			    }).append($("<button>", {
-				    "class": "delete-btn",
-				    "type": "submit",
-				    "text": "Remove"
-			    }))
-			    )
-			    );
-		    }
-		    else if (info.user_deleted !== undefined) {
-			    $(`form#${info.user_deleted}`).parent().remove();
-		    }
-	    });
-	    socketio.on("updated_events", function(info) {
-		    console.log(info);
-		    if (info.new_event !== undefined) {
-			    $(".event-list").append($("<li>", {
-				    "class": "event-item"
-			    }).append($("<h4>", {
-				    "text": `${info.new_event.title}`
-			    })).append($("<p>", {
-				    "text": `${info.new_event.description}`
-			    })).append($("<small>", {
-				    "text": `${info.new_event.start_time} to ${info.new_event.end_time}`
-			    })).append($("<form>", {
-				    "id": `${info.new_event.id}`,
-				    "class": "delete-form"
-			    }).append($("<button>", {
-				    "class": "delete-btn",
-				    "type": "submit",
-				    "text": "Remove"
-			    }))
-			    )
-			    );
-		    }
-		    else if (info.event_deleted !== undefined) {
-			    $(`form#${info.event_deleted}`).parent().remove();
-		    }
-	    });
-	});
+      $(document).ready(function () {
+        const socketio = io();
+        $("form").submit(function (event) {
+          // Does the user want to add another user?
+          if (
+            $('input[name="email"]').val() !== undefined &&
+            $('input[name="name"]').val() !== undefined &&
+            $('[name="role"]').val() !== undefined
+          ) {
+            socketio.emit("new_user", {
+              email: $('input[name="email"]').val(),
+              name: $('input[name="name"]').val(),
+              role: $('[name="role"]').val(),
+            });
+          }
+          // Does the user want to create an event?
+          else if (
+            $('input[name="title"]').val() !== undefined &&
+            $('textarea[name="description"]').val() !== undefined &&
+            $('input[name="start_time"]').val() !== undefined &&
+            $('input[name="end_time"]').val() !== undefined
+          ) {
+            // Make sure the user does not input a bad end time for the event
+            if (
+              $('input[name="start_time"]').val() >=
+              $('input[name="end_time"]').val()
+            ) {
+              alert("End time cannot be earlier than start time.");
+              event.preventDefault(); // Prevent get request from running when we "return"
+              return; // Stop the get request from being processed
+            }
+            // Continue to create an event as normal
+            socketio.emit("create_event", {
+              title: $('input[name="title"]').val(),
+              description: $('textarea[name="description"]').val(),
+              start_time: $('input[name="start_time"]').val(),
+              end_time: $('input[name="end_time"]').val(),
+              created_by: "{{ user.name }}",
+            });
+          } else if ($(this).attr("id") !== undefined) {
+            event.preventDefault();
+            if ($(this).parent().attr("class") === "user-item") {
+              socketio.emit("delete_user", {
+                user_id: $(this).attr("id"),
+              });
+            } else if ($(this).parent().attr("class") === "event-item") {
+              socketio.emit("delete_event", {
+                event_id: $(this).attr("id"),
+              });
+            }
+          }
+        });
+        socketio.on("updated_users", function (info) {
+          if (info.new_user !== undefined) {
+            $(".user-list").append(
+              $("<li>", {
+                class: "user-item",
+                text: `${info.new_user.name} - ${info.new_user.role}`,
+              }).append(
+                $("<form>", {
+                  id: `${info.new_user.id}`,
+                  class: "delete-form",
+                }).append(
+                  $("<button>", {
+                    class: "delete-btn",
+                    type: "submit",
+                    text: "Remove",
+                  })
+                )
+              )
+            );
+          } else if (info.user_deleted !== undefined) {
+            $(`form#${info.user_deleted}`).parent().remove();
+          }
+        });
+        socketio.on("updated_events", function (info) {
+          console.log(info);
+          if (info.new_event !== undefined) {
+            $(".event-list").append(
+              $("<li>", {
+                class: "event-item",
+              })
+                .append(
+                  $("<h4>", {
+                    text: `${info.new_event.title}`,
+                  })
+                )
+                .append(
+                  $("<p>", {
+                    text: `${info.new_event.description}`,
+                  })
+                )
+                .append(
+                  $("<small>", {
+                    text: `${info.new_event.start_time} to ${info.new_event.end_time}`,
+                  })
+                )
+                .append(
+                  $("<form>", {
+                    id: `${info.new_event.id}`,
+                    class: "delete-form",
+                  }).append(
+                    $("<button>", {
+                      class: "delete-btn",
+                      type: "submit",
+                      text: "Remove",
+                    })
+                  )
+                )
+            );
+          } else if (info.event_deleted !== undefined) {
+            $(`form#${info.event_deleted}`).parent().remove();
+          }
+        });
+      });
     </script>
     {% endif %}
   </head>
@@ -117,6 +156,5 @@
       <!-- Child templates will override this -->
       {% endblock %}
     </main>
-
   </body>
 </html>
