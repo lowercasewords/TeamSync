@@ -30,4 +30,10 @@
         >Log In</button>
     </form>
 </div>
+<script type="text/javascript">
+	let user_id = sessionStorage.getItem("user");
+	if (user_id) {
+		sessionStorage.removeItem("user");
+	}
+</script>
 {% endblock %}
