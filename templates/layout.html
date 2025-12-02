@@ -11,13 +11,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
     <script type="text/javascript">
 	$(document).ready(function() {
-		let user_id = sessionStorage.getItem("user"); // track via per-tab from localStorage
+		let user_id = sessionStorage.getItem("user"); // track per-tab from localStorage (helps with not overwritting flask session)
 		if (!user_id) {
-			user_id = "{{ user.email }}"
+			user_id = "{{ user.email }}";
 			sessionStorage.setItem("user", user_id);
 		}
 		const socketio = io({ query: { user: user_id } });
-	    $('form').submit(function(event) {
+		$(document).on("submit", "form.delete-form", function(event) {
+			event.preventDefault();
+			if ($(this).parent().attr('class') === "user-item") {
+				socketio.emit("delete_user", {
+					user_id: $(this).attr('id')
+				});
+			}
+			else if ($(this).parent().attr('class') === "event-item") {
+				socketio.emit("delete_event", {
+				        event_id: $(this).attr('id')
+				});
+			}
+		});
+		$('form').submit(function(event) {
 		    if (($('input[name="email"]').val() !== undefined) && ($('input[name="name"]').val() !== undefined) && ($('select[name="role"]').val() !== undefined)) {
 			    socketio.emit("new_user", {
 				    email: $('input[name="email"]').val(),
@@ -34,20 +47,7 @@
 				    created_by: "{{ user.name }}"
 			    });
 		    }
-		    else if ($(this).attr('id') !== undefined) {
-			    event.preventDefault();
-			    if ($(this).parent().attr('class') === "user-item") {
-				    socketio.emit("delete_user", {
-					    user_id: $(this).attr('id')
-				    });
-			    }
-			    else if ($(this).parent().attr('class') === "event-item") {
-				    socketio.emit("delete_event", {
-					    event_id: $(this).attr('id')
-				    });
-			    }
-		    }
-	    });
+		});
 	    socketio.on("updated_users", function(info) {
 		    if (info.new_user !== undefined) {
 			    $(".user-list").append($("<li>", {

@@ -46,8 +46,8 @@ def handle_connect():
     else:
         users_model = get_user_model()
         session['user'] = users_model.get_user_by_email(user)
-        print(session.get("user"))
         users[sid] = user
+        print(session.get("user"))
         print(f"2: user {user} has connected")
 
 @socketio.on('disconnect')
@@ -92,7 +92,6 @@ def create_event(form_info):
 def delete_event(form_info):
     user = users.get(request.sid)
     if not user:
-        emit('delete_failed', {'error': 'no_event_id'}, to=request.sid)
         return
     else:
         events_model = get_event_model()
