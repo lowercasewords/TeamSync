@@ -3,6 +3,9 @@ content %}
 <div class="dashboard-container">
   <header class="top-bar">
     <h2>Dashboard</h2>
+    <div>
+      <p>Logged in as {{ user.name }} ({{ user.role }}): {{ user.email }}</p>
+    </div>
   </header>
 
   <div class="dashboard-body">
@@ -16,12 +19,9 @@ content %}
         <li class="event-item">
           <h4>{{ event.title }}</h4>
           <p>{{ event.description }}</p>
-	  <small>{{ event.start_time }} to {{ event.end_time }}</small>
+          <small>{{ event.start_time }} to {{ event.end_time }}</small>
 
-          <form
-            class="delete-form"
-	    id="{{ event.id }}"
-          >
+          <form class="delete-form" id="{{ event.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
         </li>
@@ -49,12 +49,10 @@ content %}
       <ul class="user-list">
         {% for user in users %}
         <li class="user-item">
-          {{ user.name }} – {{ user.role }}
+          <span>{{ user.name }} – {{ user.role }}</span>
+          <p>{{ user.email }}</p>
 
-          <form
-            class="delete-form"
-	    id="{{ user.id }}"
-          >
+          <form class="delete-form" id="{{ user.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
         </li>
