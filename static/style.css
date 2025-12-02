@@ -1,4 +1,3 @@
-/* Base layout — flexbox like Google Calendar */
 .dashboard-container {
   width: 100%;
   height: 100%;
@@ -15,12 +14,24 @@
   height: calc(100vh - 60px);
 }
 
-/* Left side — events */
+/* left side of the dashboard with events */
 .events-panel {
-  flex: 3; /* 70% width */
+  flex: 3;
   padding: 20px;
   border-right: 1px solid #ddd;
   overflow-y: auto;
+}
+
+/* Centers the form on the page */
+div.center-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* keeps blcoks inside the form aligned to the left */
+div.center-container form {
+  display: inline-block;
+  text-align: left;
 }
 
 .event-list {
@@ -56,9 +67,9 @@
   font-style: italic;
 }
 
-/* Right sidebar */
+/* right side of the dashboard with links */
 .sidebar {
-  flex: 1; /* 30% width */
+  flex: 1;
   padding: 20px;
   background: #fafafa;
   overflow-y: auto;
@@ -115,6 +126,15 @@
   display: inline-block;
   padding: 8px 14px;
   background: #888;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+button.submit-button {
+  display: inline-block;
+  padding: 8px 14px;
+  background: #24b630;
   color: white;
   text-decoration: none;
   border-radius: 5px;

@@ -9,7 +9,7 @@ content %}
   </header>
 
   <div class="dashboard-body">
-    <!-- Ride side of dashboard -->
+    <!-- Left side of dashboard -->
     <section class="events-panel">
       <h3>Events</h3>
 
@@ -17,9 +17,14 @@ content %}
       <ul class="event-list">
         {% for event in events %}
         <li class="event-item">
+          <h3>Event</h3>
           <h4>{{ event.title }}</h4>
+          <h5>Description</h5>
           <p>{{ event.description }}</p>
-          <small>{{ event.start_time }} to {{ event.end_time }}</small>
+          <small
+            >{{ event.start_time|format_datetime }} to {{
+            event.end_time|format_datetime }}</small
+          >
 
           <form class="delete-form" id="{{ event.id }}">
             <button type="submit" class="delete-btn">Remove</button>
@@ -32,7 +37,7 @@ content %}
       {% endif %}
     </section>
 
-    <!-- Ride side of dashboard -->
+    <!-- Righe side of dashboard -->
     <aside class="sidebar">
       <nav class="sidebar-links">
         <a href="{{ url_for('new_user') }}">Add User</a>

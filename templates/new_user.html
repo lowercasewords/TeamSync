@@ -1,26 +1,28 @@
 {% extends "layout.html" %} {% block title %}Add User{% endblock %} {% block
 content %}
-<h2>Add User</h2>
+<div class="center-container">
+  <h2>Add User</h2>
 
-<form action="{{ url_for('dashboard') }}">
-  <label>Name:</label><br />
-  <input type="text" name="name" required /><br /><br />
+  <form action="{{ url_for('dashboard') }}">
+    <label>Name:</label><br />
+    <input type="text" name="name" required /><br /><br />
 
-  <label>Role:</label><br />
-  <select name="role" required>
-	  <option value="read">Read</option>
-	  <option value="write">Write</option>
-	  <option value="admin">Admin</option>
-  </select><br /><br />
+    <label>Email (used to log in):</label><br />
+    <input type="email" name="email" required /><br /><br />
 
-  <label>Email (used to log in):</label><br />
-  <input type="email" name="email" required /><br /><br />
+    <label>Role:</label><br />
+    <select name="role" required>
+      <option value="read">Read</option>
+      <option value="write">Write</option>
+      <option value="admin">Admin</option></select
+    ><br /><br />
 
-  <button type="submit">Add User</button>
-</form>
+    <button class="submit-button" type="submit">Add User</button>
+  </form>
 
-<!-- Go back to the dashboard -->
-<div class="back-btn">
-  <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+  <!-- Go back to the dashboard -->
+  <div class="back-btn">
+    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+  </div>
 </div>
 {% endblock %}
