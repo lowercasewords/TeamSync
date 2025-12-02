@@ -1,4 +1,4 @@
-from flask import Flask, session, request
+from flask import Flask, abort, session, request
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
 from login import Login
@@ -81,8 +81,11 @@ def new_user(form_info):
 @socketio.on('delete_user')
 def delete_user(form_info):
     user = users.get(request.sid)
+    role = session.get("user")['role']
     if not user:
         return
+    elif role != 'admin':
+        abort(403, "Invalid permissions")
     else:
         users_model = get_user_model()
         user_deleted = users_model.delete_user_by_id(form_info['user_id'])
