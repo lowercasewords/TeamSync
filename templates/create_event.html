@@ -2,12 +2,13 @@
 content %}
 <h2>Create Event</h2>
 <div class="center-container">
-  <form action="{{ url_for('dashboard') }}">
-    <label>Event Name:</label><br />
-    <input type="text" name="title" required /><br /><br />
+  <form action="{{ url_for('dashboard', user=user.email) }}">
+  <label>Event Name:</label><br />
+  <input type="text" name="title" required /><br /><br />
 
     <label>Description:</label><br />
     <textarea name="description" required></textarea><br /><br />
+
 
     <label>Start Time:</label><br />
     <input
@@ -30,7 +31,9 @@ content %}
 
   <!-- Go back to the dashboard -->
   <div class="back-btn">
-    <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    <a href="{{ url_for('dashboard', user=user.email) }}">Back to Dashboard</a>
   </div>
-</div>
+  <button type="submit">Create Event</button>
+</form>
+
 {% endblock %}
