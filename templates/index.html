@@ -3,6 +3,9 @@ content %}
 <div class="dashboard-container">
   <header class="top-bar">
     <h2>Dashboard</h2>
+    <div>
+      <p>Logged in as {{ user.name }} ({{ user.role }}): {{ user.email }}</p>
+    </div>
   </header>
 
   <div class="dashboard-body">
@@ -14,15 +17,11 @@ content %}
       <ul class="event-list">
         {% for event in events %}
         <li class="event-item">
-          <h4>{{ event.name }}</h4>
+          <h4>{{ event.title }}</h4>
           <p>{{ event.description }}</p>
-          <small>{{ event.time }}</small>
+          <small>{{ event.start_time }} to {{ event.end_time }}</small>
 
-          <form
-            action="{{ url_for('delete_event', event_id=event.id) }}"
-            method="POST"
-            class="delete-form"
-          >
+          <form class="delete-form" id="{{ event.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
         </li>
@@ -50,13 +49,10 @@ content %}
       <ul class="user-list">
         {% for user in users %}
         <li class="user-item">
-          {{ user.name }} – {{ user.position }}
+          <span>{{ user.name }} – {{ user.role }}</span>
+          <p>{{ user.email }}</p>
 
-          <form
-            action="{{ url_for('delete_user', user_id=user.id) }}"
-            method="POST"
-            class="delete-form"
-          >
+          <form class="delete-form" id="{{ user.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
         </li>
@@ -68,5 +64,4 @@ content %}
     </aside>
   </div>
 </div>
-
 {% endblock %}

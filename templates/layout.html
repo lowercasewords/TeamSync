@@ -5,6 +5,186 @@
     <title>{% block title %}Team Sync{% endblock %}</title>
 
     <link rel="stylesheet" href="/static/style.css" />
+
+    {% if user is defined %}
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        let user_id = sessionStorage.getItem("user"); // track per-tab from localStorage (helps with not overwritting flask session)
+        if (!user_id) {
+          user_id = "{{ user.email }}";
+          sessionStorage.setItem("user", user_id);
+        }
+        const socketio = io({ query: { user: user_id } });
+        $(document).on("submit", "form.delete-form", function (event) {
+          event.preventDefault();
+          if ($(this).parent().attr("class") === "user-item") {
+            socketio.emit("delete_user", {
+              user_id: $(this).attr("id"),
+            });
+          } else if ($(this).parent().attr("class") === "event-item") {
+            socketio.emit("delete_event", {
+              event_id: $(this).attr("id"),
+            });
+          }
+        });
+        $(".logout-btn")
+          .parent()
+          .submit(function (event) {
+            sessionStorage.removeItem("user");
+          });
+        $("form").submit(function (event) {
+          if (
+            $('input[name="email"]').val() !== undefined &&
+            $('input[name="name"]').val() !== undefined &&
+            $('select[name="role"]').val() !== undefined
+          ) {
+            socketio.emit("new_user", {
+              email: $('input[name="email"]').val(),
+              name: $('input[name="name"]').val(),
+              role: $('select[name="role"]').val(),
+            });
+          } else if (
+            $('input[name="title"]').val() !== undefined &&
+            $('textarea[name="description"]').val() !== undefined &&
+            $('input[name="start_time"]').val() !== undefined &&
+            $('input[name="end_time"]').val() !== undefined
+          ) {
+            if (
+              $('input[name="start_time"]').val() >=
+              $('input[name="end_time"]').val()
+            ) {
+              alert("End time cannot be earlier than start time.");
+              event.preventDefault(); // Prevent get request from running when we "return"
+              return; // Stop the get request from being processed
+            }
+            socketio.emit("create_event", {
+              title: $('input[name="title"]').val(),
+              description: $('textarea[name="description"]').val(),
+              start_time: $('input[name="start_time"]').val(),
+              end_time: $('input[name="end_time"]').val(),
+              created_by: "{{ user.name }}",
+            });
+          }
+        });
+        socketio.on("updated_users", function (info) {
+          if (info.new_user !== undefined) {
+            $(".user-list").append(
+              $("<li>", {
+                class: "user-item",
+                text: `${info.new_user.name} - ${info.new_user.role}`,
+              }).append(
+                $("<form>", {
+                  id: `${info.new_user.id}`,
+                  class: "delete-form",
+                }).append(
+                  $("<button>", {
+                    class: "delete-btn",
+                    type: "submit",
+                    text: "Remove",
+                  })
+                )
+              )
+            );
+          } else if (info.user_deleted !== undefined) {
+            $(`form#${info.user_deleted}`).parent().remove();
+          }
+        });
+        socketio.on("updated_events", function (info) {
+          if (info.new_event !== undefined) {
+            if ($(".events-panel").has(".event-list").length > 0) {
+              $(".event-list").append(
+                $("<li>", {
+                  class: "event-item",
+                })
+                  .append(
+                    $("<h4>", {
+                      text: `${info.new_event.title}`,
+                    })
+                  )
+                  .append(
+                    $("<p>", {
+                      text: `${info.new_event.description}`,
+                    })
+                  )
+                  .append(
+                    $("<small>", {
+                      text: `${info.new_event.start_time} to ${info.new_event.end_time}`,
+                    })
+                  )
+                  .append(
+                    $("<form>", {
+                      id: `${info.new_event.id}`,
+                      class: "delete-form",
+                    }).append(
+                      $("<button>", {
+                        class: "delete-btn",
+                        type: "submit",
+                        text: "Remove",
+                      })
+                    )
+                  )
+              );
+            } else {
+              $(".empty-msg").remove();
+              $(".events-panel").append(
+                $("<ul>", {
+                  class: "event-list",
+                }).append(
+                  $("<li>", {
+                    class: "event-item",
+                  })
+                    .append(
+                      $("<h4>", {
+                        text: `${info.new_event.title}`,
+                      })
+                    )
+                    .append(
+                      $("<p>", {
+                        text: `${info.new_event.description}`,
+                      })
+                    )
+                    .append(
+                      $("<small>", {
+                        text: `${info.new_event.start_time} to ${info.new_event.end_time}`,
+                      })
+                    )
+                    .append(
+                      $("<form>", {
+                        id: `${info.new_event.id}`,
+                        class: "delete-form",
+                      }).append(
+                        $("<button>", {
+                          class: "delete-btn",
+                          type: "submit",
+                          text: "Remove",
+                        })
+                      )
+                    )
+                )
+              );
+            }
+          } else if (info.event_deleted !== undefined) {
+            $(`form#${info.event_deleted}`).parent().remove();
+            if ($(".event-list").has(".event-item").length === 0) {
+              $(".event-list").remove();
+              $(".events-panel").append(
+                $("<p>", {
+                  class: "empty-msg",
+                  text: "No events yet.",
+                })
+              );
+            }
+          }
+        });
+      });
+    </script>
+    {% endif %}
   </head>
 
   <body>
