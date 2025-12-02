@@ -25,10 +25,11 @@ content %}
             >{{ event.start_time|format_datetime }} to {{
             event.end_time|format_datetime }}</small
           >
-
+          {% if user.role != "read" %}
           <form class="delete-form" id="{{ event.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>
@@ -40,8 +41,13 @@ content %}
     <!-- Righe side of dashboard -->
     <aside class="sidebar">
       <nav class="sidebar-links">
+        {% if user.role == "admin" %}
         <a href="{{ url_for('new_user', user=user.email) }}">Add User</a>
-        <a href="{{ url_for('create_event', user=user.email) }}">Create Event</a>
+        {% endif %} {% if user.role != "read" %}
+        <a href="{{ url_for('create_event', user=user.email) }}"
+          >Create Event</a
+        >
+        {% endif %}
 
         <form action="{{ url_for('logout') }}" method="POST">
           <button class="logout-btn" type="submit">Logout</button>
@@ -52,16 +58,18 @@ content %}
 
       {% if users %}
       <ul class="user-list">
-        {% for user in users %}
+        {% for loop_user in users %} {% if loop_user != user %}
         <li class="user-item">
-          <span>{{ user.name }} – {{ user.role }}</span>
-          <p>{{ user.email }}</p>
+          <span>{{ loop_user.name }} – {{ loop_user.role }}</span>
+          <p>{{ loop_user.email }}</p>
 
+          {% if user.role == "admin" %}
           <form class="delete-form" id="{{ user.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
+          {% endif %}
         </li>
-        {% endfor %}
+        {% endif %} {% endfor %}
       </ul>
       {% else %}
       <p class="empty-msg">No users added.</p>
