@@ -27,6 +27,9 @@ Bound to Logout class via HTTP POST
 Bound to Dashboard class via HTTP GET
 
     /create_event
+## Database Back-End( Users & Events)
+Owner: Taka Irizarry
+Packages: entrymode, eventsmodel
 
 Bound to Event class via HTTP GET
 

@@ -1,4 +1,4 @@
-#Taka Irizarry (team member of TeamSync llc and charcuterie artist/educator/barista/software dev/musician/poet/gamer)
+#Taka Irizarry
 #iriz@pdx.edu
  
 # entrymodel/model_sqlite3.py
@@ -34,6 +34,22 @@ class UserModel:
             ("vrami2@pdx.edu", "Victor", "admin"),
             )
         self.conn.commit()
+
+        #random admin
+        cur.execute("SELECT COUNT(*) FROM users where role = 'admin';")
+        (admin_count,) = cur.fetchone()
+        if admin_count == 0:
+            import random
+            rand_suffix = random.randint(1000, 9999) 
+            email = f"admin{rand_suffix}@example.com"
+            name = "Seed Admin"
+
+            cur.execute(
+                "INSERT INTO users (email, name, role) VALUES (?, ?, 'admin');",
+                (email, name),
+            )
+            self.conn.commit()
+        
 
 
     #GET OPERATORS
