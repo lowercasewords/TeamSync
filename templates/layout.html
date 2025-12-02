@@ -33,6 +33,11 @@
             });
           }
         });
+        $(".logout-btn")
+          .parent()
+          .submit(function (event) {
+            sessionStorage.removeItem("user");
+          });
         $("form").submit(function (event) {
           if (
             $('input[name="email"]').val() !== undefined &&
