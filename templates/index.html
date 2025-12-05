@@ -9,7 +9,7 @@ content %}
   </header>
 
   <div class="dashboard-body">
-    <!-- Ride side of dashboard -->
+    <!-- Left side of dashboard -->
     <section class="events-panel">
       <h3>Events</h3>
 
@@ -17,13 +17,19 @@ content %}
       <ul class="event-list">
         {% for event in events %}
         <li class="event-item">
+          <h3>Event</h3>
           <h4>{{ event.title }}</h4>
+          <h5>Description</h5>
           <p>{{ event.description }}</p>
-          <small>{{ event.start_time }} to {{ event.end_time }}</small>
-
+          <small
+            >{{ event.start_time|format_datetime }} to {{
+            event.end_time|format_datetime }}</small
+          >
+          {% if user.role != "read" %}
           <form class="delete-form" id="{{ event.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
+          {% endif %}
         </li>
         {% endfor %}
       </ul>
@@ -32,11 +38,16 @@ content %}
       {% endif %}
     </section>
 
-    <!-- Ride side of dashboard -->
+    <!-- Righe side of dashboard -->
     <aside class="sidebar">
       <nav class="sidebar-links">
-        <a href="{{ url_for('new_user') }}">Add User</a>
-        <a href="{{ url_for('create_event') }}">Create Event</a>
+        {% if user.role == "admin" %}
+        <a href="{{ url_for('new_user', user=user.email) }}">Add User</a>
+        {% endif %} {% if user.role != "read" %}
+        <a href="{{ url_for('create_event', user=user.email) }}"
+          >Create Event</a
+        >
+        {% endif %}
 
         <form action="{{ url_for('logout') }}" method="POST">
           <button class="logout-btn" type="submit">Logout</button>
@@ -47,16 +58,18 @@ content %}
 
       {% if users %}
       <ul class="user-list">
-        {% for user in users %}
+        {% for loop_user in users %} {% if loop_user != user %}
         <li class="user-item">
-          <span>{{ user.name }} – {{ user.role }}</span>
-          <p>{{ user.email }}</p>
+          <span>{{ loop_user.name }} – {{ loop_user.role }}</span>
+          <p>{{ loop_user.email }}</p>
 
+          {% if user.role == "admin" %}
           <form class="delete-form" id="{{ user.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
+          {% endif %}
         </li>
-        {% endfor %}
+        {% endif %} {% endfor %}
       </ul>
       {% else %}
       <p class="empty-msg">No users added.</p>

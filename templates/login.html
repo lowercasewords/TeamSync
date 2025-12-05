@@ -1,39 +1,31 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block title %}Log-in page{% endblock %} {% block
+content %}
+<div style="max-width: 400px; margin: 50px auto">
+  <h2>Login</h2>
 
-{% block title %}Log-in page{% endblock %}
+  <form method="POST" action="{{ url_for('login') }}">
+    <label for="email">Email:</label><br />
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      placeholder="Enter your email"
+      style="width: 100%; padding: 8px; margin-top: 5px"
+    /><br /><br />
 
-{% block content %}
-<div style="max-width: 400px; margin: 50px auto;">
-    <h2>Login</h2>
-
-    <!-- Show error message if provided -->
-    {% if error %}
-        <div style="color: red; margin-bottom: 10px;">
-            {{ error }}
-        </div>
-    {% endif %}
-
-    <form method="POST" action="{{ url_for('login') }}">
-        <label for="email">Email:</label><br>
-        <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            required 
-            placeholder="Enter your email"
-            style="width: 100%; padding: 8px; margin-top: 5px;"
-        ><br><br>
-
-        <button 
-            type="submit" 
-            style="padding: 8px 16px; width: 100%; cursor: pointer;"
-        >Log In</button>
-    </form>
+    <button
+      type="submit"
+      style="padding: 8px 16px; width: 100%; cursor: pointer"
+    >
+      Log In
+    </button>
+  </form>
 </div>
 <script type="text/javascript">
-	let user_id = sessionStorage.getItem("user");
-	if (user_id) {
-		sessionStorage.removeItem("user");
-	}
+  let user_id = sessionStorage.getItem("user");
+  if (user_id) {
+    sessionStorage.removeItem("user");
+  }
 </script>
 {% endblock %}

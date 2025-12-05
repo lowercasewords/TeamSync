@@ -1,4 +1,4 @@
-from flask import Flask, session, request
+from flask import Flask, abort, session, request
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
 from login import Login
@@ -8,6 +8,8 @@ from event import Event
 from user import User
 from entrymodel import get_model as get_user_model
 from eventsmodel import get_model as get_event_model
+
+from datetime import datetime
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "TeamSync Pro S++ 2.0 Demo"
@@ -32,6 +34,16 @@ app.add_url_rule('/create_event',
 app.add_url_rule('/new_user',
                  view_func=User.as_view('new_user'),
                  methods=["GET"])
+
+# Display the html's "datetime-local" in a more human-readable format
+@app.template_filter("format_datetime")
+def format_datetime(value):
+    try:
+        dt = datetime.fromisoformat(value)
+        return dt.strftime("%B %d, %Y")  # "Month Day, Year" formatting on the client
+    # Just in case if the original formatting was not correct
+    except:
+        return value
 
 users = {}
 
@@ -69,8 +81,11 @@ def new_user(form_info):
 @socketio.on('delete_user')
 def delete_user(form_info):
     user = users.get(request.sid)
+    role = session.get("user")['role']
     if not user:
         return
+    elif role != 'admin':
+        abort(403, "Invalid permissions")
     else:
         users_model = get_user_model()
         user_deleted = users_model.delete_user_by_id(form_info['user_id'])
