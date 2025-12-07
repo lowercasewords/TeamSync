@@ -6,6 +6,7 @@
 
     <link rel="stylesheet" href="/static/style.css" />
 
+    <!-- If we have a current user session -->
     {% if user is defined %}
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script
@@ -14,13 +15,16 @@
       crossorigin="anonymous"
     ></script>
     <script type="text/javascript">
+      // Editing the html document page
       $(document).ready(function () {
         let user_id = sessionStorage.getItem("user"); // track per-tab from localStorage (helps with not overwritting flask session)
         if (!user_id) {
           user_id = "{{ user.email }}";
           sessionStorage.setItem("user", user_id);
         }
+        // Creates a socket session for the specified user
         const socketio = io({ query: { user: user_id } });
+        // On submitting "delete" form for either user r event
         $(document).on("submit", "form.delete-form", function (event) {
           event.preventDefault();
           if ($(this).parent().attr("class") === "user-item") {
@@ -33,22 +37,27 @@
             });
           }
         });
+        // Logout button
         $(".logout-btn")
           .parent()
           .submit(function (event) {
             sessionStorage.removeItem("user");
           });
+        // Form event user/event submission
         $("form").submit(function (event) {
+          // Check for valid user info
           if (
             $('input[name="email"]').val() !== undefined &&
             $('input[name="name"]').val() !== undefined &&
             $('select[name="role"]').val() !== undefined
           ) {
+            // Final submission of the user after validation
             socketio.emit("new_user", {
               email: $('input[name="email"]').val(),
               name: $('input[name="name"]').val(),
               role: $('select[name="role"]').val(),
             });
+            // Check for valid event info
           } else if (
             $('input[name="title"]').val() !== undefined &&
             $('textarea[name="description"]').val() !== undefined &&
@@ -63,6 +72,7 @@
               event.preventDefault(); // Prevent get request from running when we "return"
               return; // Stop the get request from being processed
             }
+            // Final submission of the user after validation
             socketio.emit("create_event", {
               title: $('input[name="title"]').val(),
               description: $('textarea[name="description"]').val(),
@@ -72,6 +82,7 @@
             });
           }
         });
+        // Retrieves response from the socket server to update the user list
         socketio.on("updated_users", function (info) {
           if (info.new_user !== undefined) {
             delete_element = $("<form>", {
@@ -90,22 +101,34 @@
                 $("<li>", {
                   class: "user-item",
                   text: `${info.new_user.name} - ${info.new_user.role}`,
-                }).append(delete_element)
+                })
+                  .append(
+                    $("<p>", {
+                      text: `${info.new_user.email}`,
+                    })
+                  )
+                  .append(delete_element)
               );
             } else {
               $(".user-list").append(
                 $("<li>", {
                   class: "user-item",
                   text: `${info.new_user.name} - ${info.new_user.role}`,
-                })
+                }).append(
+                  $("<p>", {
+                    text: `${info.new_user.email}`,
+                  })
+                )
               );
             }
           } else if (info.user_deleted !== undefined) {
             $(`form#${info.user_deleted}`).parent().remove();
           }
         });
+        // Retrieves response from the socket server to update the event list
         socketio.on("updated_events", function (info) {
           if (info.new_event !== undefined) {
+            // If there were events on the page already
             if ($(".events-panel").has(".event-list").length > 0) {
               $(".event-list").append(
                 $("<li>", {
@@ -139,6 +162,7 @@
                     )
                   )
               );
+              // There were no events on the page, add a new event
             } else {
               $(".empty-msg").remove();
               $(".events-panel").append(
@@ -178,7 +202,9 @@
                 )
               );
             }
-          } else if (info.event_deleted !== undefined) {
+          }
+          // Deleting an event
+          else if (info.event_deleted !== undefined) {
             $(`form#${info.event_deleted}`).parent().remove();
             if ($(".event-list").has(".event-item").length === 0) {
               $(".event-list").remove();
