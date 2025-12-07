@@ -38,7 +38,7 @@ content %}
       {% endif %}
     </section>
 
-    <!-- Righe side of dashboard -->
+    <!-- Right side of dashboard -->
     <aside class="sidebar">
       <nav class="sidebar-links">
         {% if user.role == "admin" %}
@@ -64,7 +64,7 @@ content %}
           <p>{{ loop_user.email }}</p>
 
           {% if user.role == "admin" %}
-          <form class="delete-form" id="{{ user.id }}">
+          <form class="delete-form" id="{{ loop_user.id }}">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
           {% endif %}
