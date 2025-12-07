@@ -171,7 +171,7 @@
               $(".events-panel").append(event_list);
             }
             // Role check
-            if ("{{ user.role }}" == "admin") {
+            if ("{{ user.role }}" == "admin" || "{{ user.role }}" == "write") {
               $(".event-list").append(event_item.append(delete_element));
             } else {
               $(".event-list").append(event_item);
