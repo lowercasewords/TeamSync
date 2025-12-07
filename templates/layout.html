@@ -114,6 +114,11 @@
             }
           } else if (info.user_deleted !== undefined) {
             $(`li.user-item#${info.user_deleted}`).remove();
+            if (`${info.user_deleted}` == "{{ user.id }}") {
+              // sessionStorage.removeItem("user");
+              // window.location.reload();
+              window.location.href = "/";
+            }
           }
         });
         // Retrieves response from the socket server to update the event list

@@ -8,7 +8,7 @@ class Dashboard(MethodView):
         user = session.get('user')
         user_storage = request.args.get('user')
         users_model = get_user_model()
-        
+        print('\n\n\n', user_storage, '\n\n\n', user)
         if user is None or user_storage != user['email']:
             session['user'] = users_model.get_user_by_email(user_storage)
             user = session['user']
