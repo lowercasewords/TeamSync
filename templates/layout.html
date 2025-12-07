@@ -32,6 +32,7 @@
               user_id: $(this).attr("id"),
             });
           } else if ($(this).parent().attr("class") === "event-item") {
+            console.log("\n\n\n", "\n\n\n", $(this).attr("id"));
             socketio.emit("delete_event", {
               event_id: $(this).attr("id"),
             });
@@ -96,7 +97,7 @@
               })
             );
             // Role check
-            if (info.new_user.role == "admin") {
+            if (user.role == "admin") {
               $(".user-list").append(
                 $("<li>", {
                   class: "user-item",
@@ -128,84 +129,64 @@
         // Retrieves response from the socket server to update the event list
         socketio.on("updated_events", function (info) {
           if (info.new_event !== undefined) {
-            // If there were events on the page already
-            if ($(".events-panel").has(".event-list").length > 0) {
-              $(".event-list").append(
-                $("<li>", {
-                  class: "event-item",
+            event_item = $("<li>", {
+              class: "event-item",
+              id: `${info.new_event.id}`,
+            })
+              .append(
+                $("<h3>", {
+                  text: `Event`,
                 })
-                  .append(
-                    $("<h4>", {
-                      text: `${info.new_event.title}`,
-                    })
-                  )
-                  .append(
-                    $("<p>", {
-                      text: `${info.new_event.description}`,
-                    })
-                  )
-                  .append(
-                    $("<small>", {
-                      text: `${info.new_event.start_time} to ${info.new_event.end_time}`,
-                    })
-                  )
-                  .append(
-                    $("<form>", {
-                      id: `${info.new_event.id}`,
-                      class: "delete-form",
-                    }).append(
-                      $("<button>", {
-                        class: "delete-btn",
-                        type: "submit",
-                        text: "Remove",
-                      })
-                    )
-                  )
+              )
+              .append(
+                $("<h4>", {
+                  text: `${info.new_event.title}`,
+                })
+              )
+              .append(
+                $("<h5>", {
+                  text: `Description`,
+                })
+              )
+              .append(
+                $("<p>", {
+                  text: `${info.new_event.description}`,
+                })
+              )
+              .append(
+                $("<small>", {
+                  text: `${info.new_event.start_time} to ${info.new_event.end_time}`,
+                })
               );
-              // There were no events on the page, add a new event
-            } else {
+            // The delete element
+            delete_element = $("<form>", {
+              id: `${info.new_event.id}`,
+              class: "delete-form",
+            }).append(
+              $("<button>", {
+                class: "delete-btn",
+                type: "submit",
+                text: "Remove",
+              })
+            );
+            // If there were events on the page already
+            if ($(".events-panel").has(".event-list").length <= 0) {
+              event_list = $("<ul>", { class: "event-list" });
               $(".empty-msg").remove();
-              $(".events-panel").append(
-                $("<ul>", {
-                  class: "event-list",
-                }).append(
-                  $("<li>", {
-                    class: "event-item",
-                  })
-                    .append(
-                      $("<h4>", {
-                        text: `${info.new_event.title}`,
-                      })
-                    )
-                    .append(
-                      $("<p>", {
-                        text: `${info.new_event.description}`,
-                      })
-                    )
-                    .append(
-                      $("<small>", {
-                        text: `${info.new_event.start_time} to ${info.new_event.end_time}`,
-                      })
-                    )
-                    .append(
-                      $("<form>", {
-                        id: `${info.new_event.id}`,
-                        class: "delete-form",
-                      }).append(
-                        $("<button>", {
-                          class: "delete-btn",
-                          type: "submit",
-                          text: "Remove",
-                        })
-                      )
-                    )
-                )
-              );
+              $(".events-panel").append(event_list);
+            }
+            // Role check
+            if ("{{ user.role }}" == "admin") {
+              $(".event-list").append(event_item).append(delete_element);
+            } else {
+              $(".event-list").append(event_item);
             }
           }
           // Deleting an event
           else if (info.event_deleted !== undefined) {
-            $(`form#${info.event_deleted}`).parent().remove();
+            console.log($(`li.event-item#${info.event_deleted}`));
+            $(`li.event-item#${info.event_deleted}`).remove();
+
             if ($(".event-list").has(".event-item").length === 0) {
               $(".event-list").remove();
               $(".events-panel").append(

@@ -70,21 +70,24 @@ def handle_disconnect(data=None):
 @socketio.on('new_user')
 def new_user(form_info):
     user = users.get(request.sid)
+    role = session.get("user")['role']
     if not user:
         return
+    elif role != 'admin':
+        abort(403, "Invalid permissions")
     else:
         users_model = get_user_model()
         user_email = users_model.create_user(form_info['email'], form_info['name'], form_info['role'])
-        if user_email == None:
-            # Couldn't add a user: (Duplicate users, etc)
-            # abort(403, "Duplicate user error")
-            # print("works")
-            # emit('updated_users', {'new_user': user}, broadcast=True)
-            pass
-        else:
-            new_user = users_model.get_user_by_email(user_email)
-            emit('updated_users', {'new_user': new_user}, broadcast=True)
-            # redirect(url_for('dashboard', user=user.email))
+    #     if user_email == None:
+    #         # Couldn't add a user: (Duplicate users, etc)
+    #         # abort(403, "Duplicate user error")
+    #         # print("works")
+    #         # emit('updated_users', {'new_user': user}, broadcast=True)
+    #         pass
+    # else:
+        new_user = users_model.get_user_by_email(user_email)
+        emit('updated_users', {'new_user': new_user}, broadcast=True)
+        # redirect(url_for('dashboard', user=user.email))
         
 @socketio.on('delete_user')
 def delete_user(form_info):
@@ -103,19 +106,27 @@ def delete_user(form_info):
 @socketio.on('create_event')
 def create_event(form_info):
     user = users.get(request.sid)
+    role = session.get("user")['role']
     if not user:
         return
+    elif role == 'read':
+        abort(403, "Invalid permissions")
     else:
         events_model = get_event_model()
         event_id = events_model.create_event(form_info['title'], form_info['description'], form_info['start_time'], form_info['end_time'], form_info['created_by'])
         created_event = events_model.get_event_by_id(event_id)
+        created_event['start_time'] = format_datetime(created_event['start_time'])
+        created_event['end_time'] = format_datetime(created_event['end_time'])
         emit('updated_events', {'new_event': created_event}, broadcast=True)
 
 @socketio.on('delete_event')
 def delete_event(form_info):
     user = users.get(request.sid)
+    role = session.get("user")['role']
     if not user:
         return
+    elif role == 'read':
+        abort(403, "Invalid permissions")
     else:
         events_model = get_event_model()
         event_deleted = events_model.delete_event(form_info['event_id'])

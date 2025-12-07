@@ -16,7 +16,7 @@ content %}
       {% if events %}
       <ul class="event-list">
         {% for event in events %}
-        <li class="event-item">
+        <li class="event-item" id="{{ event.id }}">
           <h3>Event</h3>
           <h4>{{ event.title }}</h4>
           <h5>Description</h5>
@@ -59,12 +59,12 @@ content %}
       {% if users %}
       <ul class="user-list">
         {% for loop_user in users %} {% if loop_user != user %}
-        <li class="user-item">
+        <li class="user-item" id="{{ loop_user.id }}">
           <span>{{ loop_user.name }} – {{ loop_user.role }}</span>
           <p>{{ loop_user.email }}</p>
 
           {% if user.role == "admin" %}
-          <form class="delete-form" id="{{ loop_user.id }}">
+          <form class="delete-form">
             <button type="submit" class="delete-btn">Remove</button>
           </form>
           {% endif %}

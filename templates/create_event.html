@@ -2,7 +2,7 @@
 content %}
 <h2>Create Event</h2>
 <div class="center-container">
-  <form action="{{ url_for('dashboard', user=user.email) }}">
+  <form action="{{ url_for('dashboard', user=user.email) }}", method="post">
   <label>Event Name:</label><br />
   <input type="text" name="title" required /><br /><br />
 
