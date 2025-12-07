@@ -77,12 +77,17 @@ class UserModel:
     #Error if email exists or role invalid
     def create_user(self, email: str, name: str, role: str = "read") -> int:
         cur = self.conn.cursor()
-        cur.execute(
-            "INSERT INTO users (email, name, role) VALUES (?, ?, ?);",
-            (email, name, role),
-        )
-        self.conn.commit()
-        return email
+        try:
+
+            cur.execute(
+                "INSERT INTO users (email, name, role) VALUES (?, ?, ?);",
+                (email, name, role),
+            )
+            self.conn.commit()
+            return email
+        except sqlite3.IntegrityError:
+            print("Integrity Error: Duplicate Users")
+            return None
 
     #DELETE OPERATIONS
 
