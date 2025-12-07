@@ -32,7 +32,6 @@
               user_id: $(this).attr("id"),
             });
           } else if ($(this).parent().attr("class") === "event-item") {
-            console.log("\n\n\n", "\n\n\n", $(this).attr("id"));
             socketio.emit("delete_event", {
               event_id: $(this).attr("id"),
             });
@@ -86,6 +85,16 @@
         // Retrieves response from the socket server to update the user list
         socketio.on("updated_users", function (info) {
           if (info.new_user !== undefined) {
+            user_item = $("<li>", {
+              class: "user-item",
+              text: `${info.new_user.name} - ${info.new_user.role}`,
+              id: `${info.new_user.id}`,
+            }).append(
+              $("<p>", {
+                text: `${info.new_user.email}`,
+              })
+            );
+
             delete_element = $("<form>", {
               id: `${info.new_user.id}`,
               class: "delete-form",
@@ -96,34 +105,15 @@
                 text: "Remove",
               })
             );
+
             // Role check
-            if (user.role == "admin") {
-              $(".user-list").append(
-                $("<li>", {
-                  class: "user-item",
-                  text: `${info.new_user.name} - ${info.new_user.role}`,
-                })
-                  .append(
-                    $("<p>", {
-                      text: `${info.new_user.email}`,
-                    })
-                  )
-                  .append(delete_element)
-              );
+            if ("{{ user.role }}" == "admin") {
+              $(".user-list").append(user_item.append(delete_element));
             } else {
-              $(".user-list").append(
-                $("<li>", {
-                  class: "user-item",
-                  text: `${info.new_user.name} - ${info.new_user.role}`,
-                }).append(
-                  $("<p>", {
-                    text: `${info.new_user.email}`,
-                  })
-                )
-              );
+              $(".user-list").append(user_item);
             }
           } else if (info.user_deleted !== undefined) {
-            $(`form#${info.user_deleted}`).parent().remove();
+            $(`li.user-item#${info.user_deleted}`).remove();
           }
         });
         // Retrieves response from the socket server to update the event list
@@ -177,14 +167,13 @@
             }
             // Role check
             if ("{{ user.role }}" == "admin") {
-              $(".event-list").append(event_item).append(delete_element);
+              $(".event-list").append(event_item.append(delete_element));
             } else {
               $(".event-list").append(event_item);
             }
           }
           // Deleting an event
           else if (info.event_deleted !== undefined) {
-            console.log($(`li.event-item#${info.event_deleted}`));
             $(`li.event-item#${info.event_deleted}`).remove();
 
             if ($(".event-list").has(".event-item").length === 0) {
