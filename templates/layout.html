@@ -74,23 +74,32 @@
         });
         socketio.on("updated_users", function (info) {
           if (info.new_user !== undefined) {
-            $(".user-list").append(
-              $("<li>", {
-                class: "user-item",
-                text: `${info.new_user.name} - ${info.new_user.role}`,
-              }).append(
-                $("<form>", {
-                  id: `${info.new_user.id}`,
-                  class: "delete-form",
-                }).append(
-                  $("<button>", {
-                    class: "delete-btn",
-                    type: "submit",
-                    text: "Remove",
-                  })
-                )
-              )
+            delete_element = $("<form>", {
+              id: `${info.new_user.id}`,
+              class: "delete-form",
+            }).append(
+              $("<button>", {
+                class: "delete-btn",
+                type: "submit",
+                text: "Remove",
+              })
             );
+            // Role check
+            if (info.new_user.role == "admin") {
+              $(".user-list").append(
+                $("<li>", {
+                  class: "user-item",
+                  text: `${info.new_user.name} - ${info.new_user.role}`,
+                }).append(delete_element)
+              );
+            } else {
+              $(".user-list").append(
+                $("<li>", {
+                  class: "user-item",
+                  text: `${info.new_user.name} - ${info.new_user.role}`,
+                })
+              );
+            }
           } else if (info.user_deleted !== undefined) {
             $(`form#${info.user_deleted}`).parent().remove();
           }

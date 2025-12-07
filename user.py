@@ -7,6 +7,7 @@ class User(MethodView):
         user = session.get('user')
         user_storage = request.args.get('user')
         users_model = get_user_model()
+
         if user is None or user_storage != user['email']:
             session['user'] = users_model.get_user_by_email(user_storage)
             user = session['user']

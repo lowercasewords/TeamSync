@@ -1,4 +1,4 @@
-from flask import Flask, abort, session, request
+from flask import Flask, abort, session, request, redirect, url_for
 from flask_socketio import SocketIO, emit
 from flask.views import MethodView
 from login import Login
@@ -25,7 +25,7 @@ app.add_url_rule('/logout',
 
 app.add_url_rule('/dashboard',
                  view_func=Dashboard.as_view('dashboard'),
-                 methods=["GET"])
+                 methods=["GET", "POST"])
 
 app.add_url_rule('/create_event',
                  view_func=Event.as_view('create_event'),
@@ -75,8 +75,16 @@ def new_user(form_info):
     else:
         users_model = get_user_model()
         user_email = users_model.create_user(form_info['email'], form_info['name'], form_info['role'])
-        new_user = users_model.get_user_by_email(user_email)
-        emit('updated_users', {'new_user': new_user}, broadcast=True)
+        if user_email == None:
+            # Couldn't add a user: (Duplicate users, etc)
+            # abort(403, "Duplicate user error")
+            # print("works")
+            # emit('updated_users', {'new_user': user}, broadcast=True)
+            pass
+        else:
+            new_user = users_model.get_user_by_email(user_email)
+            emit('updated_users', {'new_user': new_user}, broadcast=True)
+            # redirect(url_for('dashboard', user=user.email))
         
 @socketio.on('delete_user')
 def delete_user(form_info):

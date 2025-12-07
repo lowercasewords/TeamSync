@@ -3,7 +3,7 @@ content %}
 <div class="center-container">
   <h2>Add User</h2>
 
-  <form action="{{ url_for('dashboard', user=user.email) }}">
+  <form action="{{ url_for('dashboard', user=user.email) }}" , method="post">
     <label>Name:</label><br />
     <input type="text" name="name" required /><br /><br />
 
@@ -20,8 +20,9 @@ content %}
     <button class="submit-button" type="submit">Add User</button>
   </form>
 
-<!-- Go back to the dashboard -->
-<div class="back-btn">
-	<a href="{{ url_for('dashboard', user=user.email) }}">Back to Dashboard</a>
+  <!-- Go back to the dashboard -->
+  <div class="back-btn">
+    <a href="{{ url_for('dashboard', user=user.email) }}">Back to Dashboard</a>
+  </div>
+  {% endblock %}
 </div>
-{% endblock %}
